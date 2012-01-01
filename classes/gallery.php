@@ -453,7 +453,7 @@ class Gallery {
 
         \DB::insert($image_table)->set($create_image)->execute();
 
-        static::_create_thumb(array('type' => 'gallery', 'filename' => $create_image['filename']));
+        static::_create_thumb(array('type' => 'image', 'filename' => $create_image['filename']));
 
         return;        
     }
@@ -479,7 +479,7 @@ class Gallery {
             if (\Upload::is_valid())
             {
                 \Upload::save();
-                static::_create_thumb(array('type' => 'gallery', 'filename' => $update_image['filename']));
+                static::_create_thumb(array('type' => 'image', 'filename' => $update_image['filename']));
             }
             else
             {
