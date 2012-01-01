@@ -63,7 +63,7 @@ A gallery package for the FuelPHP framework.
 	$success = Gallery::create_gallery($new_gallery);	
 
 	// Gallery update
-	$new_gallery = array(
+	$update_gallery = array(
 				'id' => (int) $id,
 				'name' => (string) Input::post('name'),
 				'filename' => (string) Input::post('filename'),

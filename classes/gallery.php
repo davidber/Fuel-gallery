@@ -362,6 +362,7 @@ class Gallery {
             if (\Upload::is_valid())
             {
                 \Upload::save();
+                static::_create_thumb(array('type' => 'gallery', 'filename' => $update_gallery['filename']));
             }
             else
             {
@@ -393,7 +394,6 @@ class Gallery {
         $image_table = \Config::get('gallery.image_table');
         $delete_id = (int) $id;
 
-        // Delete the lot including all images
         $galleries = \DB::select()->from($gallery_table)->where('id', '=', $delete_id)->execute()->as_array();
         $images = \DB::select()->from($image_table)->where('gallery_id', '=', $delete_id)->execute()->as_array();
         
@@ -409,14 +409,14 @@ class Gallery {
         foreach($images as $image)
         {
             // Delete the thumb and fullsize images
-            if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']))
+            if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']))
             {
-                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']);                 
+                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']);                 
             }
 
-            if (file_exists(DOCROOT.\Config::get('gallery.image_path').$gallery['filename']))
+            if (file_exists(DOCROOT.\Config::get('gallery.image_path').$image['filename']))
             {
-                \File::delete(DOCROOT.\Config::get('gallery.image_path').$gallery['filename']);                 
+                \File::delete(DOCROOT.\Config::get('gallery.image_path').$image['filename']);                 
             }
         }
 
@@ -430,30 +430,94 @@ class Gallery {
     {
         \Config::load('gallery', 'gallery');
 
-        $gallery_table = \Config::get('gallery.gallery_table');
         $image_table = \Config::get('gallery.image_table');
         $create_image = (array) $data;
-        
+
+        $config = array(
+            'path' => DOCROOT.\Config::get('gallery.image_path'),
+            'create_path' => true,
+            'normalize' => true,
+            'ext_whitelist' => array('img', 'jpg', 'jpeg', 'gif', 'png'),
+        );
+
+        \Upload::process($config);
+
+        if (\Upload::is_valid())
+        {
+            \Upload::save();
+        }
+        else
+        {
+            return array('No files to upload');
+        }
+
+        \DB::insert($image_table)->set($create_image)->execute();
+
+        static::_create_thumb(array('type' => 'gallery', 'filename' => $create_image['filename']));
+
+        return;        
     }
 
     public static function update_image($data = array())
     {
         \Config::load('gallery', 'gallery');
 
-        $gallery_table = \Config::get('gallery.gallery_table');
         $image_table = \Config::get('gallery.image_table');
         $update_image = (array) $data;
-        
+
+        if (in_array('filename', $update_image))
+        {
+            $config = array(
+                'path' => DOCROOT.\Config::get('gallery.image_path'),
+                'create_path' => true,
+                'normalize' => true,
+                'ext_whitelist' => array('img', 'jpg', 'jpeg', 'gif', 'png'),
+            );
+
+            \Upload::process($config);
+
+            if (\Upload::is_valid())
+            {
+                \Upload::save();
+                static::_create_thumb(array('type' => 'gallery', 'filename' => $update_image['filename']));
+            }
+            else
+            {
+                return array('No files to upload');
+            }
+        }
+
+        \DB::update($image_table)->set($update_image)->where('id', '=', $update_image['id'])->execute();
+
+        return;        
     }
 
     public static function delete_image($id = null)
     {
         \Config::load('gallery', 'gallery');
 
-        $gallery_table = \Config::get('gallery.gallery_table');
         $image_table = \Config::get('gallery.image_table');
-        $delete_image = (int) $id;
+        $delete_id = (int) $id;
+
+        $images = \DB::select()->from($image_table)->where('id', '=', $delete_id)->execute()->as_array();
         
+        foreach($images as $image)
+        {
+            // Delete the thumb and fullsize images
+            if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']))
+            {
+                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']);                 
+            }
+
+            if (file_exists(DOCROOT.\Config::get('gallery.image_path').$image['filename']))
+            {
+                \File::delete(DOCROOT.\Config::get('gallery.image_path').$image['filename']);                 
+            }
+        }
+
+        $deleted_images = \DB::delete($image_table)->where('id', '=', $delete_id)->execute();
+
+        return;        
     }
 
     private static function _create_thumb($data = array())
