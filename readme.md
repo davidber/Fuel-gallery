@@ -1,6 +1,6 @@
 # FuelPHP Gallery Package.
 
-A complete FuelPHP gallery package.
+A gallery package for the FuelPHP framework.
 
 # Summary
 
@@ -15,6 +15,24 @@ A complete FuelPHP gallery package.
 * Configurable controller name settings.
 * Configurable gallery image settings.
 * Configurable path settings.
+
+# Database structure
+
+	CREATE TABLE IF NOT EXISTS `galleries` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `name` varchar(50) NOT NULL,
+	  `filename` varchar(50) NOT NULL,
+	  `parent_id` int(11) NOT NULL DEFAULT '0',
+	  PRIMARY KEY (`id`)
+	)
+
+	CREATE TABLE IF NOT EXISTS `gallery_images` (
+  	`id` int(11) NOT NULL AUTO_INCREMENT,
+  	`filename` varchar(50) NOT NULL,
+  	`caption` text NOT NULL,
+  	`gallery_id` int(11) NOT NULL,
+  	PRIMARY KEY (`id`)
+	)
 
 # Usage
 
