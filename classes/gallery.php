@@ -59,7 +59,7 @@ class Gallery {
 
             if ($gallery['parent_id'] == $view_sub_gallery)
             {
-                if ($counter === \Config::get('gallery.galleries_per_row'))
+                if ($counter === \Config::get('gallery.gallery_per_row'))
                 {
                     $counter = 1;
                     $output .= "\t</div>\n";
@@ -74,20 +74,20 @@ class Gallery {
                 $output .= "\t\t\t".'<div class="gallery_name">'.$gallery['name']."</div>\n";
                 $output .= "\t\t\t";
 
-                if (file_exists(DOCROOT.\Config::get('gallery.image_path').$gallery['filename']) and ! empty($gallery['filename']))
+                if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']) and ! empty($gallery['filename']))
                 {
-                    $img = \Config::get('gallery.image_path').$gallery['filename'];
+                    $img = \Config::get('gallery.thumb_path').$gallery['filename'];
                 }
                 else
                 {
-                    $img = \Config::get('gallery.image_path').\Config::get('gallery.galleries_image_not_found');
+                    $img = \Config::get('gallery.thumb_path').\Config::get('gallery.gallery_image_not_found');
                 }
 
                 $output .= \Html::anchor($gallery_link, \Html::img($img, array(
                         'alt' => $gallery['name'],
                         'title' => $gallery['name'],
-                        'width' => \Config::get('gallery.galleries_image_width').'px',
-                        'height' => \Config::get('gallery.galleries_image_height').'px',
+                        'width' => \Config::get('gallery.gallery_image_width').'px',
+                        'height' => \Config::get('gallery.gallery_image_height').'px',
                 )));
                 $output .= "\n";
                 $output .= "\t\t\t";
@@ -298,7 +298,7 @@ class Gallery {
         return \DB::select()->from($gallery_table)->where('id', '=', $id)->execute()->as_array();   
     }
 
-    public static function create($data = array())    
+    public static function create_gallery($data = array())    
     {
         \Config::load('gallery', 'gallery');
 
@@ -325,6 +325,8 @@ class Gallery {
 
         \DB::insert($gallery_table)->set($new_gallery)->execute();
 
+        static::_create_thumb(array('type' => 'gallery', 'filename' => $new_gallery['filename']));
+
         /*
         foreach (Upload::get_errors() as $file)
         {
@@ -339,7 +341,7 @@ class Gallery {
         return; // $success
    }
 
-    public static function update($data = array())
+    public static function update_gallery($data = array())
     {
         \Config::load('gallery', 'gallery');
 
@@ -383,7 +385,7 @@ class Gallery {
         return; // $success
     }
 
-    public function action_delete($id = null)
+    public static function delete_gallery($id = null)
     {
         \Config::load('gallery', 'gallery');
 
@@ -400,7 +402,7 @@ class Gallery {
             // Delete the gallery images
             if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']))
             {
-                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']));                 
+                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']);                 
             }
         }
 
@@ -409,12 +411,12 @@ class Gallery {
             // Delete the thumb and fullsize images
             if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']))
             {
-                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']));                 
+                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']);                 
             }
 
             if (file_exists(DOCROOT.\Config::get('gallery.image_path').$gallery['filename']))
             {
-                \File::delete(DOCROOT.\Config::get('gallery.image_path').$gallery['filename']));                 
+                \File::delete(DOCROOT.\Config::get('gallery.image_path').$gallery['filename']);                 
             }
         }
 
@@ -423,5 +425,64 @@ class Gallery {
 
         return; // $success        
     }
+
+    public static function create_image($data = array())
+    {
+        \Config::load('gallery', 'gallery');
+
+        $gallery_table = \Config::get('gallery.gallery_table');
+        $image_table = \Config::get('gallery.image_table');
+        $create_image = (array) $data;
+        
+    }
+
+    public static function update_image($data = array())
+    {
+        \Config::load('gallery', 'gallery');
+
+        $gallery_table = \Config::get('gallery.gallery_table');
+        $image_table = \Config::get('gallery.image_table');
+        $update_image = (array) $data;
+        
+    }
+
+    public static function delete_image($id = null)
+    {
+        \Config::load('gallery', 'gallery');
+
+        $gallery_table = \Config::get('gallery.gallery_table');
+        $image_table = \Config::get('gallery.image_table');
+        $delete_image = (int) $id;
+        
+    }
+
+    private static function _create_thumb($data = array())
+    {
+        \Config::load('gallery', 'gallery');
+        
+        $image = (array) $data;
+        $filename = \Config::get('gallery.image_path').$image['filename'];
+        $thumb_filename = \Config::get('gallery.thumb_path').$image['filename'];
+        $image_type = $image['type'];
+
+        if ($image_type === 'gallery')
+        {
+            $width = \Config::get('gallery.gallery_image_width');
+            $height = \Config::get('gallery.gallery_image_height');
+        }
+
+        if ($image_type === 'image')
+        {
+            $width = \Config::get('gallery.thumb_image_width');
+            $height = \Config::get('gallery.thumb_image_height');            
+        }
+
+        \Image::load($filename)
+            ->resize($width, $height, true, true)
+            ->save($thumb_filename);
+
+        return;        
+    }
+
 
 }

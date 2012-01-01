@@ -60,7 +60,7 @@ A gallery package for the FuelPHP framework.
 				'parent_id' => (string) Input::post('parent_id'),
 				);
 
-	$success = Gallery::create($new_gallery);	
+	$success = Gallery::create_gallery($new_gallery);	
 
 	// Gallery update
 	$new_gallery = array(
@@ -70,11 +70,33 @@ A gallery package for the FuelPHP framework.
 				'parent_id' => (string) Input::post('parent_id'),
 				);
 
-	$success = Gallery::update($update_gallery);
+	$success = Gallery::update_gallery($update_gallery);
 
 	//Gallery delete
 	// *note this will delete gallery and all associated images
-	$success = Gallery::delete($id);
+	$success = Gallery::delete_gallery($id);
+
+	// Image create
+	$new_image = array(
+				'name' => (string) Input::post('name'),
+				'filename' => (string) Input::post('filename'),
+				'parent_id' => (string) Input::post('parent_id'),
+				);
+
+	$success = Gallery::create_image($new_image);	
+
+	// Gallery update
+	$new_image = array(
+				'id' => (int) $id,
+				'name' => (string) Input::post('name'),
+				'filename' => (string) Input::post('filename'),
+				'parent_id' => (string) Input::post('parent_id'),
+				);
+
+	$success = Gallery::update_image($update_image);
+
+	//Image delete	
+	$success = Gallery::delete_image($id);
 	
 # Example controller
 

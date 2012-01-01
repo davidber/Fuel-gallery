@@ -20,20 +20,20 @@ return array(
     
 
     /* Gallery and sub-gallery layout */
-    'galleries_per_row' => 4,
-    'galleries_image_width' => 175,
-    'galleries_image_height' => 175,
-    'galleries_image_not_found' => 'repair.gif',
+    'gallery_per_row' => 4,
+    'gallery_image_width' => 175,
+    'gallery_image_height' => 175,
+    'gallery_image_not_found' => 'repair.png',
 
     /* Thumb image layout */
     'thumb_path' => 'assets/userfiles/gallery/thumb/',
     'thumbs_per_row' => 4,
     'thumb_image_width' => 100,
     'thumb_image_height' => 100,
-    'thumb_image_not_found' => 'repair.gif',
+    'thumb_image_not_found' => 'repair.png',
     'thumb_display_filename' => true,
 
     /* Full size image */
     'image_path' => 'assets/userfiles/gallery/img/',
-    'full_image_not_found' => 'repair.gif',
+    'full_image_not_found' => 'repair.png',
 );
