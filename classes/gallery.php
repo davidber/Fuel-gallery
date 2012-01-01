@@ -8,12 +8,25 @@ namespace Gallery;
 
 class Gallery {
 
-    public static function get_gallery_html($id = 0)
+    protected static $gallery_table = null;
+
+    protected static $image_table = null;
+
+    public static function _init()
     {
         \Config::load('gallery', 'gallery');
+        //\Lang::load('gallery', 'gallery');
 
-        $gallery_table = \Config::get('gallery.gallery_table');
-        $image_table = \Config::get('gallery.image_table');
+        static::$gallery_table = \Config::get('gallery.gallery_table');
+        static::$image_table = \Config::get('gallery.image_table');        
+    }
+
+    public static function get_gallery_html($id = 0)
+    {
+        // Need standard variables rather than static::$gallery_table and static::$image_table for building initial $query
+        $gallery_table = static::$gallery_table;
+        $image_table = static::$image_table;
+
         $view_sub_gallery = (int) $id;
         $has_subs = array();
         $counter = 0;
@@ -108,7 +121,7 @@ class Gallery {
 
         if ($view_sub_gallery)
         {
-            $breadcumb_result = \DB::select()->from($gallery_table)->where('id', '=', $result[0]['parent_id'])->execute()->as_array();
+            $breadcumb_result = \DB::select()->from(static::$gallery_table)->where('id', '=', $result[0]['parent_id'])->execute()->as_array();
             $breadcrumb = '<div class="breadcrumb">'.\Html::anchor(\Config::get('gallery.frontend_controller_gallery'), \Config::get('gallery.gallery_title'));
             $breadcrumb .= \Config::get('gallery.breadcrumb_separator');
             $breadcrumb .= $breadcumb_result[0]['name'];
@@ -126,15 +139,11 @@ class Gallery {
 
     public static function get_thumbs_html($id = null)
     {
-        \Config::load('gallery', 'gallery');
-
-        $gallery_table = \Config::get('gallery.gallery_table');
-        $image_table = \Config::get('gallery.image_table');
         $output = null;
         $view_gallery = (int) $id;
         $counter = 0;
 
-        $result = \DB::select()->from($image_table)->where('gallery_id', '=', $view_gallery)->execute()->as_array();
+        $result = \DB::select()->from(static::$image_table)->where('gallery_id', '=', $view_gallery)->execute()->as_array();
 
         if ( ! $result)
         {
@@ -201,14 +210,14 @@ class Gallery {
             $output .= "\t\t</div>\n";
         }
                
-        $breadcumb_result = \DB::select()->from($gallery_table)->where('id', '=', $view_gallery)->execute()->as_array();
+        $breadcumb_result = \DB::select()->from(static::$gallery_table)->where('id', '=', $view_gallery)->execute()->as_array();
 
         $breadcrumb = '<div class="breadcrumb">'.\Html::anchor(\Config::get('gallery.frontend_controller_gallery'), \Config::get('gallery.gallery_title'));
         $breadcrumb .= \Config::get('gallery.breadcrumb_separator');
 
         if ($breadcumb_result[0]['parent_id'])
         {
-            $gallery_sub_detail = \DB::select()->from($gallery_table)->where('id', '=', $breadcumb_result[0]['parent_id'])->execute()->as_array();
+            $gallery_sub_detail = \DB::select()->from(static::$gallery_table)->where('id', '=', $breadcumb_result[0]['parent_id'])->execute()->as_array();
             $breadcrumb .= \Html::anchor(\Config::get('gallery.frontend_controller_gallery').$breadcumb_result[0]['parent_id'], $breadcumb_result[0]['name']);
             $breadcrumb .= \Config::get('gallery.breadcrumb_separator');
         }
@@ -223,15 +232,11 @@ class Gallery {
 
     public static function get_image_html($id = 0)
     {
-        \Config::load('gallery', 'gallery');
-
-        $gallery_table = \Config::get('gallery.gallery_table');
-        $image_table = \Config::get('gallery.image_table');
         $image_id = (int) $id;
 
-        $result = \DB::select()->from($image_table)->where('id', '=', $image_id)->execute()->as_array();
-        $gallery_sub_result = \DB::select()->from($gallery_table)->where('id', '=', $result[0]['gallery_id'])->execute()->as_array();
-        $gallery_sub_detail = \DB::select()->from($gallery_table)->where('id', '=', $gallery_sub_result[0]['parent_id'])->execute()->as_array();
+        $result = \DB::select()->from(static::$image_table)->where('id', '=', $image_id)->execute()->as_array();
+        $gallery_sub_result = \DB::select()->from(static::$gallery_table)->where('id', '=', $result[0]['gallery_id'])->execute()->as_array();
+        $gallery_sub_detail = \DB::select()->from(static::$gallery_table)->where('id', '=', $gallery_sub_result[0]['parent_id'])->execute()->as_array();
 
         if ( ! $result)
         {
@@ -275,34 +280,20 @@ class Gallery {
 
     public static function get_by_parent($id = null)
     {
-        \Config::load('gallery', 'gallery');
-
-        $gallery_table = \Config::get('gallery.gallery_table');
         $parent_id = (int) $id;
 
-        $sql = "SELECT * FROM $gallery_table";
-        if ( isset($parent_id))
-        {
-            $sql .= ' WHERE parent_id = '.$parent_id;
-        }
+        $sql = "SELECT * FROM ".static::$gallery_table.(isset($parent_id) ? ' WHERE parent_id = '.$parent_id : '');
 
         return \DB::Query($sql)->execute()->as_array();
     }
 
     public static function get_by_id($id = null)
     {
-        \Config::load('gallery', 'gallery');
-
-        $gallery_table = \Config::get('gallery.gallery_table');
-
-        return \DB::select()->from($gallery_table)->where('id', '=', $id)->execute()->as_array();   
+        return \DB::select()->from(static::$gallery_table)->where('id', '=', $id)->execute()->as_array();   
     }
 
     public static function create_gallery($data = array())    
     {
-        \Config::load('gallery', 'gallery');
-
-        $gallery_table = \Config::get('gallery.gallery_table');
         $new_gallery = (array) $data;
 
         $config = array(
@@ -323,7 +314,7 @@ class Gallery {
             return array('No files to upload');
         }
 
-        \DB::insert($gallery_table)->set($new_gallery)->execute();
+        \DB::insert(static::$gallery_table)->set($new_gallery)->execute();
 
         static::_create_thumb(array('type' => 'gallery', 'filename' => $new_gallery['filename']));
 
@@ -343,9 +334,6 @@ class Gallery {
 
     public static function update_gallery($data = array())
     {
-        \Config::load('gallery', 'gallery');
-
-        $gallery_table = \Config::get('gallery.gallery_table');
         $update_gallery = (array) $data;
 
         if (in_array('filename', $update_gallery))
@@ -370,7 +358,7 @@ class Gallery {
             }
         }
 
-        \DB::update($gallery_table)->set($update_gallery)->where('id', '=', $update_gallery['id'])->execute();
+        \DB::update(static::$gallery_table)->set($update_gallery)->where('id', '=', $update_gallery['id'])->execute();
 
         /*
         foreach (Upload::get_errors() as $file)
@@ -388,14 +376,10 @@ class Gallery {
 
     public static function delete_gallery($id = null)
     {
-        \Config::load('gallery', 'gallery');
-
-        $gallery_table = \Config::get('gallery.gallery_table');
-        $image_table = \Config::get('gallery.image_table');
         $delete_id = (int) $id;
 
-        $galleries = \DB::select()->from($gallery_table)->where('id', '=', $delete_id)->execute()->as_array();
-        $images = \DB::select()->from($image_table)->where('gallery_id', '=', $delete_id)->execute()->as_array();
+        $galleries = \DB::select()->from(static::$gallery_table)->where('id', '=', $delete_id)->execute()->as_array();
+        $images = \DB::select()->from(static::$image_table)->where('gallery_id', '=', $delete_id)->execute()->as_array();
         
         foreach($galleries as $gallery)
         {
@@ -420,17 +404,14 @@ class Gallery {
             }
         }
 
-        $deleted_galleries = \DB::delete($gallery_table)->where('id', '=', $delete_id)->execute();
-        $deleted_images = \DB::delete($image_table)->where('gallery_id', '=', $delete_id)->execute();
+        $deleted_galleries = \DB::delete(static::$gallery_table)->where('id', '=', $delete_id)->execute();
+        $deleted_images = \DB::delete(static::$image_table)->where('gallery_id', '=', $delete_id)->execute();
 
         return; // $success        
     }
 
     public static function create_image($data = array())
     {
-        \Config::load('gallery', 'gallery');
-
-        $image_table = \Config::get('gallery.image_table');
         $create_image = (array) $data;
 
         $config = array(
@@ -451,7 +432,7 @@ class Gallery {
             return array('No files to upload');
         }
 
-        \DB::insert($image_table)->set($create_image)->execute();
+        \DB::insert(static::$image_table)->set($create_image)->execute();
 
         static::_create_thumb(array('type' => 'image', 'filename' => $create_image['filename']));
 
@@ -460,9 +441,6 @@ class Gallery {
 
     public static function update_image($data = array())
     {
-        \Config::load('gallery', 'gallery');
-
-        $image_table = \Config::get('gallery.image_table');
         $update_image = (array) $data;
 
         if (in_array('filename', $update_image))
@@ -487,19 +465,16 @@ class Gallery {
             }
         }
 
-        \DB::update($image_table)->set($update_image)->where('id', '=', $update_image['id'])->execute();
+        \DB::update(static::$image_table)->set($update_image)->where('id', '=', $update_image['id'])->execute();
 
         return;        
     }
 
     public static function delete_image($id = null)
     {
-        \Config::load('gallery', 'gallery');
-
-        $image_table = \Config::get('gallery.image_table');
         $delete_id = (int) $id;
 
-        $images = \DB::select()->from($image_table)->where('id', '=', $delete_id)->execute()->as_array();
+        $images = \DB::select()->from(static::$image_table)->where('id', '=', $delete_id)->execute()->as_array();
         
         foreach($images as $image)
         {
@@ -515,15 +490,13 @@ class Gallery {
             }
         }
 
-        $deleted_images = \DB::delete($image_table)->where('id', '=', $delete_id)->execute();
+        $deleted_images = \DB::delete(static::$image_table)->where('id', '=', $delete_id)->execute();
 
         return;        
     }
 
     private static function _create_thumb($data = array())
     {
-        \Config::load('gallery', 'gallery');
-        
         $image = (array) $data;
         $filename = \Config::get('gallery.image_path').$image['filename'];
         $thumb_filename = \Config::get('gallery.thumb_path').$image['filename'];
