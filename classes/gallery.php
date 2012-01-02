@@ -214,6 +214,7 @@ class Gallery {
                         'height' => \Config::get('gallery.thumb_image_height') . 'px',
                         )), 
                         array(\Config::get('gallery.jquery_addon_tag') => \Config::get('gallery.jquery_addon_attrib'),
+                                'title' => $image['caption'],
                                 'class' => \Config::get('gallery.jquery_addon_class'),
                                 )
                         );
