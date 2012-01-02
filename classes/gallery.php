@@ -384,23 +384,36 @@ class Gallery {
         foreach($galleries as $gallery)
         {
             // Delete the gallery images
-            if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']))
+            try
             {
-                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']);                 
+                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$gallery['filename']);
             }
+            catch(\InvalidPathException $e)
+            {
+                // The file does not exist
+            }
+
         }
 
         foreach($images as $image)
         {
             // Delete the thumb and fullsize images
-            if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']))
+            try
             {
-                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']);                 
+                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']);
+            }
+            catch(\InvalidPathException $e)
+            {
+                // The file does not exist
             }
 
-            if (file_exists(DOCROOT.\Config::get('gallery.image_path').$image['filename']))
+            try
             {
-                \File::delete(DOCROOT.\Config::get('gallery.image_path').$image['filename']);                 
+                \File::delete(DOCROOT.\Config::get('gallery.image_path').$image['filename']); 
+            }
+            catch(\InvalidPathException $e)
+            {
+                // The file does not exist
             }
         }
 
@@ -479,14 +492,22 @@ class Gallery {
         foreach($images as $image)
         {
             // Delete the thumb and fullsize images
-            if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']))
+            try
             {
-                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']);                 
+                \File::delete(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']);
+            }
+            catch(\InvalidPathException $e)
+            {
+                // The file does not exist
             }
 
-            if (file_exists(DOCROOT.\Config::get('gallery.image_path').$image['filename']))
+            try
             {
-                \File::delete(DOCROOT.\Config::get('gallery.image_path').$image['filename']);                 
+                \File::delete(DOCROOT.\Config::get('gallery.image_path').$image['filename']); 
+            }
+            catch(\InvalidPathException $e)
+            {
+                // The file does not exist
             }
         }
 
