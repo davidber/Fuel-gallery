@@ -182,19 +182,41 @@ class Gallery {
 
                 if (file_exists(DOCROOT.\Config::get('gallery.thumb_path').$image['filename']) and ! empty($image['filename']))
                 {
-                    $img = \Config::get('gallery.thumb_path').$image['filename'];
+                    if (\Config::get('gallery.jquery_addon_tag'))
+                    {
+                        $img = \Config::get('gallery.image_path').$image['filename'];
+                        $link = \Config::get('gallery.image_path').$image['filename'];
+                    }
+                    else
+                    {
+                        $img = \Config::get('gallery.thumb_path').$image['filename'];
+                        $link = \Config::get('gallery.frontend_controller_image').$image['id'];
+                    }
                 }
                 else
                 {
-                    $img = \Config::get('gallery.thumb_path').\Config::get('gallery.thumb_image_not_found');
+                    if (\Config::get('gallery.jquery_addon_tag'))
+                    {
+                        $img = \Config::get('gallery.image_path').\Config::get('gallery.full_image_not_found');
+                        $link = \Config::get('gallery.image_path').\Config::get('gallery.full_image_not_found');
+                    }
+                    else
+                    {
+                        $img = \Config::get('gallery.thumb_path').\Config::get('gallery.thumb_image_not_found');
+                        $link = '';
+                    }
                 }
 
-                $output .= \Html::anchor(\Config::get('gallery.frontend_controller_image').$image['id'], \Html::img($img, array(
+                $output .= \Html::anchor($link, \Html::img($img, array(
                         'alt' => $image['caption'],
-                        'title' => $image['caption'],
+                        'title' => $image['caption'],                        
                         'width' => \Config::get('gallery.thumb_image_width') . 'px',
                         'height' => \Config::get('gallery.thumb_image_height') . 'px',
-                )));
+                        )), 
+                        array(\Config::get('gallery.jquery_addon_tag') => \Config::get('gallery.jquery_addon_attrib'),
+                                'class' => \Config::get('gallery.jquery_addon_class'),
+                                )
+                        );
                 $output .= "\n";
                 $output .= "\t\t";
 

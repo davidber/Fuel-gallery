@@ -9,6 +9,10 @@ return array(
     'frontend_controller_thumb' => 'gallery/thumb/',
     'frontend_controller_image' => 'gallery/image/',
 
+    'jquery_addon_tag' => '', // 'rel',
+    'jquery_addon_attrib' => '', // 'lightbox[gallery]',
+    'jquery_addon_class' => '', // 'thickbox',
+
     'gallery_title' => 'General Gallery',
 
     'breadcrumb_separator' => ' &gt; ',

@@ -15,6 +15,9 @@ A gallery package for the FuelPHP framework.
 * Configurable controller name settings.
 * Configurable gallery image settings.
 * Configurable path settings.
+* jQuery Lightbox2 support. 
+* jQuery Fancybox support.
+* jQuery Thickbox support.
 
 # Database structure
 

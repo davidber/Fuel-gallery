@@ -74,5 +74,5 @@
 	padding: 10px;
 }
 .image{
-	width:960px;
+	max-width:960px;
 }
