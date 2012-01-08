@@ -2,6 +2,8 @@
 
 A gallery package for the FuelPHP framework.
 
+Current version 2.0
+
 # Summary
 
 * No additional dependancies (Pure FuelPHP).
@@ -39,22 +41,31 @@ A gallery package for the FuelPHP framework.
 
 # Usage
 
-	// Gallery display functions
-	$gallery = Gallery::get_gallery_html();
-	$sub_gallery = Gallery::get_gallery_html($sub_gallery_id);
-	$gallery_thumbs = Gallery::get_thumbs_html($gallery_id);
-	$gallery_image = Gallery::get_image_html($image_id);
+	/*
+	* Gallery frontend html display functions
+	*/
 
-	// General functions
+	$gallery = Gallery::html()->gallery_html();
+	$sub_gallery = Gallery::html()->gallery_html($sub_gallery_id);
+	$gallery_thumbs = Gallery::html()->thumbs_html($gallery_id);
+	$gallery_image = Gallery::html()->image_html($image_id);
+
+
+	/*
+	* Gallery functions
+	*/
+
+	// Get all galleries
+	$galleries = Gallery::section()->all();
 
 	// Get all gallery parents
-	$all_galleries = Gallery::get_by_parent();
+	$galleries = Gallery::section()->by_parent();
 
 	// Get a specific specific gallery by parent id
-	$all_galleries = Gallery::get_by_parent(1);
+	$gallery = Gallery::section()->by_parent(1);
 
 	// Get a specific gallery by id
-	$gallery_parent = Gallery::get_by_id(1);
+	$gallery = Gallery::section()->by_id(1);
 	
 	// Gallery create
 	$new_gallery = array(
@@ -63,7 +74,7 @@ A gallery package for the FuelPHP framework.
 				'parent_id' => (string) Input::post('parent_id'),
 				);
 
-	$success = Gallery::create_gallery($new_gallery);	
+	$success = Gallery::section()->create($new_gallery);	
 
 	// Gallery update
 	$update_gallery = array(
@@ -73,11 +84,16 @@ A gallery package for the FuelPHP framework.
 				'parent_id' => (string) Input::post('parent_id'),
 				);
 
-	$success = Gallery::update_gallery($update_gallery);
+	$success = Gallery::section()->update($update_gallery);
 
 	//Gallery delete
 	// *note this will delete gallery and all associated images
-	$success = Gallery::delete_gallery($id);
+	$success = Gallery::section()->delete($id);
+
+
+	/*
+	* Image functions
+	*/
 
 	// Image create
 	$new_image = array(
@@ -86,7 +102,7 @@ A gallery package for the FuelPHP framework.
 				'parent_id' => (string) Input::post('parent_id'),
 				);
 
-	$success = Gallery::create_image($new_image);	
+	$success = Gallery::image()->create($new_image);	
 
 	// Gallery update
 	$new_image = array(
@@ -96,15 +112,20 @@ A gallery package for the FuelPHP framework.
 				'parent_id' => (string) Input::post('parent_id'),
 				);
 
-	$success = Gallery::update_image($update_image);
+	$success = Gallery::image()->update($update_image);
+
+	// Get all images in a gallery
+	$images = Gallery::image()->by_gallery_id($gallery_id);
+
+	// Get a specific image
+	$image = Gallery::image()->by_id($id);
 
 	//Image delete	
-	$success = Gallery::delete_image($id);
+	$success = Gallery::image()->delete($id);
 	
 # Example controller
 
-    // Load the package
-    Package::load('gallery');
+    See the Examples folder
 
 # Example single frontend view file 
    

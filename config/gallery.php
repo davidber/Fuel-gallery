@@ -9,8 +9,8 @@ return array(
     'frontend_controller_thumb' => 'gallery/thumb/',
     'frontend_controller_image' => 'gallery/image/',
 
-    'jquery_addon_tag' => '', // 'rel',
-    'jquery_addon_attrib' => '', // 'lightbox[gallery]',
+    'jquery_addon_tag' => 'rel',
+    'jquery_addon_attrib' => 'lightbox[gallery]',
     'jquery_addon_class' => '', // 'thickbox',
 
     'gallery_title' => 'General Gallery',
@@ -24,18 +24,20 @@ return array(
     
 
     /* Gallery and sub-gallery layout */
-    'gallery_per_row' => 4,
-    'gallery_image_width' => 175,
-    'gallery_image_height' => 175,
-    'gallery_image_not_found' => 'repair.png',
+    'gallery_thumb_path' => 'assets/userfiles/gallery/g_thumb/',
+    'gallery_thumb_image_not_found' => 'repair.png',
+    'gallery_thumb_per_row' => 4,
+    'gallery_thumb_image_width' => 175,
+    'gallery_thumb_image_height' => 175,
+    'gallery_thumb_display_name' => true,
 
     /* Thumb image layout */
-    'thumb_path' => 'assets/userfiles/gallery/thumb/',
-    'thumbs_per_row' => 4,
-    'thumb_image_width' => 100,
-    'thumb_image_height' => 100,
-    'thumb_image_not_found' => 'repair.png',
-    'thumb_display_filename' => true,
+    'image_thumb_path' => 'assets/userfiles/gallery/i_thumb/',
+    'image_thumb_image_not_found' => 'repair.png',
+    'image_thumb_per_row' => 4,
+    'image_thumb_image_width' => 100,
+    'image_thumb_image_height' => 100,    
+    'image_thumb_display_filename' => true,
 
     /* Full size image */
     'image_path' => 'assets/userfiles/gallery/img/',

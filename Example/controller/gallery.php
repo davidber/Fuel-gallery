@@ -4,14 +4,12 @@
  * The Gallery Controller.
  *
  *
- *
- * @package
+ * 
+ * @package  
  * @extends  index
  */
 
 class Controller_Gallery extends \Controller_Template {
-
-	//public  = 'template-name';
 
 	public function before()
 	{
@@ -23,13 +21,13 @@ class Controller_Gallery extends \Controller_Template {
 	{
 		if ($gallery_id)
 		{
-			$gallery = Gallery::get_gallery_html((int)$gallery_id);
+			$gallery = Gallery::html()->gallery_html((int)$gallery_id);
 		}
 		else
 		{
-			$gallery = Gallery::get_gallery_html();
+			$gallery = Gallery::html()->gallery_html();
 		}
-
+		
 		$this->template->set_global('gallery', $gallery);
 
 		$this->template->title = '';
@@ -40,13 +38,13 @@ class Controller_Gallery extends \Controller_Template {
 	{
 		if ($thumb_id)
 		{
-			$gallery = Gallery::get_thumbs_html((int)$thumb_id);
+			$gallery = Gallery::html()->thumbs_html((int)$thumb_id);
 		}
 		else
 		{
-			$gallery = Gallery::get_thumbs_html();
+			$gallery = Gallery::html()->thumbs_html();
 		}
-
+		
 		$this->template->set_global('gallery', $gallery);
 
 		$this->template->title = '';
@@ -57,9 +55,9 @@ class Controller_Gallery extends \Controller_Template {
 	{
 		if ($image_id)
 		{
-			$gallery = Gallery::get_image_html((int)$image_id);
+			$gallery = Gallery::html()->image_html((int)$image_id);
 		}
-
+		
 		$this->template->set_global('gallery', $gallery);
 
 		$this->template->title = '';
