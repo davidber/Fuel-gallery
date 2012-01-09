@@ -1,6 +1,7 @@
 <?php
 /**
  * Main class for the Gallery package for FuelPHP.
+ * test
  *
  * @package    Gallery
  * @version    2.0

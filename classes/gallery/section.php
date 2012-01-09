@@ -31,7 +31,13 @@ class Gallery_Section
 		static::$image_table = \Config::get('gallery.image_table');
 	}
 
-
+    /**
+    * Get the section of the gallery by the parent id
+    *
+    * @param    id The sections with the parent id equal to $id (sub gallery id)
+    *
+    * @return   query The result set
+    */
 	public static function by_parent($id = null)
     {
         $parent_id = (int) $id;
@@ -41,6 +47,13 @@ class Gallery_Section
         return \DB::Query($sql)->execute()->as_array();
     }
 
+    /**
+    * Get the specific section of the gallery by the id
+    *
+    * @param    id The specific section that matches the passed id (sub gallery id)
+    *
+    * @return   query The result set
+    */
     public static function by_id($id = null)
     {
         $gallery_id = (int) $id;
@@ -48,14 +61,35 @@ class Gallery_Section
         return \DB::select()->from(static::$gallery_table)->where('id', '=', $gallery_id)->execute()->as_array();
     }
 
+    /**
+    * Get all section of the gallery
+    *
+    * @return   query The result set
+    */
     public static function all()
     {
         return \DB::select()->from(static::$gallery_table)->execute()->as_array();
     }
 
+    /**
+    * Create a new section of the gallery (sub gallery)
+    *
+    * @param    array Containing the creation data
+    *
+    * Example usage:
+    * \code
+    * array(
+    *    'name' => 'My Gallery',    
+    *    'filename' => 'test.jpg',
+    *    'parent_id' => 5
+    * )
+    * \endcode
+    *
+    * @return   query The result set
+    */
     public static function create($data = array())
     {
-        $new_gallery = (array) $data;
+        $new_section = (array) $data;
 
         $config = array(
             'path' => DOCROOT.\Config::get('gallery.image_path'),
@@ -76,9 +110,9 @@ class Gallery_Section
             return array('No files to upload');
         }
 
-        \DB::insert(static::$gallery_table)->set($new_gallery)->execute();
+        \DB::insert(static::$gallery_table)->set($new_section)->execute();
 
-        static::_create_thumb(array('type' => 'gallery', 'filename' => $new_gallery['filename']));
+        static::_create_thumb(array('type' => 'gallery', 'filename' => $new_section['filename']));
 
         /*
         foreach (Upload::get_errors() as $file)
@@ -92,8 +126,27 @@ class Gallery_Section
         //return \Upload::get_errors();
 
         return; // $success
-   }
+    }
 
+    /**
+    * Update a section of the gallery (sub gallery)
+    *
+    * @param    array Containing the update data
+    *
+    * Example usage:
+    * \code
+    * array(
+    *    'id' => 7,    
+    *    'name' => 'My Gallery',    
+    *    'filename' => 'test.jpg',
+    *    'parent_id' => 5
+    * )
+    * \endcode
+    *
+    * @warning If you are not updating the filename exclude it from the array
+    *
+    * @return   query The result set
+    */
     public static function update($data = array())
     {
         $update_gallery = (array) $data;
@@ -139,6 +192,15 @@ class Gallery_Section
         return; // $success
     }
 
+    /**
+    * Delete a section of the gallery (sub gallery)
+    *
+    * @param    id The id of the section to delete (gallery)
+    *
+    * @warning This will delete all table entries and images associated with the section
+    *
+    * @return   success Return true or false
+    */
     public static function delete($id = null)
     {
         $delete_id = (int) $id;
@@ -187,7 +249,16 @@ class Gallery_Section
 
         return; // $success
     }
-    
+
+    /**
+    * Create a new thumb image
+    *
+    * @param    array The array that is passed to create or update
+    *
+    * @warning This can not be called directly 
+    *
+    * @return   success Return true or false
+    */    
     private static function _create_thumb($data = array())
     {
         $image = (array) $data;

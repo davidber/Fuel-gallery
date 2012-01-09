@@ -26,6 +26,7 @@ class Gallery_Html
 
 	public function __construct()
 	{
+		// Set the class variables
 		static::$gallery_table = \Config::get('gallery.gallery_table');
 		static::$image_table = \Config::get('gallery.image_table');
 
@@ -78,6 +79,7 @@ class Gallery_Html
         // Run the query to get the galleries and how many images in each
         $result = \DB::query($query)->execute()->as_array();
 
+        // Loop through the results and catch sub galleries
         foreach ($result as $gallery)
         {
         	// If the gallery has a parent gallery the store it for later processing
@@ -89,14 +91,15 @@ class Gallery_Html
 
         $output = '<div class="gallery_row">'."\n";
 
-        // Loop through all results
-        // Build the html and store it in $output        
+        // Loop through all results building the html and store it in $output        
         foreach ($result as $gallery)
         {
+        	// If there are sub galleries create a link back to the fontend gallery controller
             if (in_array($gallery['id'], $has_subs))
             {
                 $gallery_link = \Config::get('gallery.frontend_controller_gallery').$gallery['id'];
             }
+            // If there are no sub galleries build a link to the frontend thumb controller
             else
             {
                 $gallery_link = \Config::get('gallery.frontend_controller_thumb').$gallery['id'];
@@ -171,10 +174,8 @@ class Gallery_Html
             $breadcrumb = '<div class="breadcrumb">'.\Config::get('gallery.gallery_title').'</div>'."\n";
         }
 
-        // Build the return array
         $ret = array('breadcrumb' => $breadcrumb, 'data' => $output);
 
-        // Return the array containing the html and breadcrumbs
         return $ret;
     }
 
@@ -198,7 +199,7 @@ class Gallery_Html
         // Query retunes the images contained within the specified gallery
         $result = \DB::select()->from(static::$image_table)->where('gallery_id', '=', $view_gallery)->execute()->as_array();
 
-        // Loop through the results building the html
+        // If there are not results build image not found output
         if ( ! $result)
         {
             $img = \Config::get('gallery.gallery_thumb_path').\Config::get('gallery.gallery_thumb_image_not_found');
@@ -214,6 +215,7 @@ class Gallery_Html
             $output .= "\t\t</div>\n";
             $output .= "</div>\n";
         }
+        // If we have results loop through the results building the html and store it in $output
         else
         {
             $output .= '<div class="thumb_row">'."\n";
@@ -323,10 +325,12 @@ class Gallery_Html
         $gallery_sub_result = \DB::select()->from(static::$gallery_table)->where('id', '=', $result[0]['gallery_id'])->execute()->as_array();
         $gallery_sub_detail = \DB::select()->from(static::$gallery_table)->where('id', '=', $gallery_sub_result[0]['parent_id'])->execute()->as_array();
 
+        // If no results just display simple text to inform user
         if ( ! $result)
         {
             $output = "\t" . '<div class="no_image">No image found</div>'."\n";
         }
+        // If there are results loop through them and build the html
         else
         {
             foreach ($result as $image)
@@ -351,6 +355,7 @@ class Gallery_Html
             }
         }
 
+        // Build the breadcumbs
         $breadcrumb = '<div class="breadcrumb">'.\Html::anchor(\Config::get('gallery.frontend_controller_gallery'), \Config::get('gallery.gallery_title'));
         $breadcrumb .= \Config::get('gallery.breadcrumb_separator');
         $breadcrumb .= \Html::anchor(\Config::get('gallery.frontend_controller_thumb').$gallery_id, $gallery_sub_detail[0]['name']);
